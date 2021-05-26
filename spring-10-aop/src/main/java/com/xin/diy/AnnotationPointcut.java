@@ -1,5 +1,6 @@
 package com.xin.diy;
 
+import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -20,8 +21,10 @@ public class AnnotationPointcut {
 
     }
     @Around("execution(* com.xin.service.UserServiceImpl.*(..))")
-    public void around(){
-        System.out.println("环绕");
-
+    public void around(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
+        System.out.println("环绕前");
+        Object proceed = proceedingJoinPoint.proceed();
+        System.out.println(proceed);
+        System.out.println("环绕后");
     }
 }

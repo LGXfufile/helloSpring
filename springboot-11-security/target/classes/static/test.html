@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>3d房屋</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <link rel='stylesheet' href='./css/geoway-gl.css' />
+    <script src="./js/geoway-gl-dev.min.js"></script>
+    <script src="./js/jquery-3.1.1.min.js"></script>
+    <style>
+        body { margin: 0; padding: 0; }
+        html, body, #map { height: 100%; }
+        /*图标框div的样式定义，定义图片背景和div尺寸*/
+        .marker {
+            background-image: url('./images/1.png');
+            width: 118px;
+            height: 297px;
+        }
+
+    </style>
+</head>
+<body>
+<div id='map'>
+    <span id="jwd"  style ="position:absolute;bottom:10px;right:5px;z-index: 1000"></span>
+</div>
+<script>
+    var map = new Geoway.Map({
+        container: 'map',
+        zoom:18,
+        pitch: 30,
+        minZoom:7,
+        maxZoom:20,
+        maxTileCacheSize: 100,
+        fontName: '微软雅黑',
+        glyphUrl: './fonts/{fontstack}/{range}.pbf',
+        center: [120.15, 30.268]
+    });
+
+    map.setLightIntensity(0.3);
+
+    var styleArray = [
+        {
+            //数据years字段值等于1999以前， 此表达式与2d过滤表达式格式一致
+            "filter": "Q_years_S_EQ=1999以前",
+            "style": [
+                {
+                    "styleId" : 1,
+                    "wallColor": "#FFFF01",
+                    "roofColor": "#FFFF01",
+                    "fillAlpha": 1,
+                }
+            ]
+        },
+        {
+            "filter": "Q_years_S_EQ=1999-2000年",
+            "style": [
+                {
+                    "styleId" : 2,
+                    "wallColor": "#FFCA00",
+                    "roofColor": "#FFCA00",
+                    "fillAlpha": 1,
+                }
+            ]
+        },
+        {
+            "filter": "Q_years_S_EQ=2000年-2010年",
+            "style": [
+                {
+                    "styleId" : 3,
+                    "wallColor": "#FF9A00",
+                    "roofColor": "#FF9A00",
+                    "fillAlpha": 1,
+                }
+            ]
+        },
+        {
+            "filter": "Q_years_S_EQ=2010年以后",
+            "style": [
+                {
+                    "styleId" : 4,
+                    "wallColor": "#FF6801",
+                    "roofColor": "#FF6801",
+                    "fillAlpha": 1,
+                }
+            ]
+        }
+
+    ];
+    var styelJson = {
+        "7-20": [
+            {
+                "id": "1",
+                //面状居民地图层为3d房屋
+                "layer":"面状居民地",
+                "children":styleArray
+            }
+        ]
+    };
+
+    //图层
+    var mixLayer = new Geoway.MixLayer('https://ditu.zjzwfw.gov.cn/mapserver/data/zjvmap/getData?x={x}&y={y}&l={z}&styleId=tdt_kejiganyangshi_2017',
+        {useFbo:true,tileFaceTime:0,
+            //2.5维房屋开始显示级别
+            houseBeginLevel:15,
+            //瓦片大小
+            tileSize:512,
+            //是否需要解码数据
+            needDecode:false,
+            //高度属性，浙江的数据里面是楼层层数
+            heightProperty : 'floor',
+            //屋顶颜色
+            roofColor:'#E7DED0',
+            //墙面颜色
+            wallColor:'#E7DED0',
+            //层高
+            heightScale:3.2,
+            //不同属性值，可以配置不同房屋样式
+            style:styelJson,
+            //是否显示注记
+            showLabel:true
+        });
+    map.addLayer(mixLayer);
+
+    //根据定义css创建marker的html元素
+    var el = document.createElement('div');
+    el.classList.add('marker');
+
+    //根据定义css创建marker的html元素，修改图标的图片
+    var e2 = document.createElement('div');
+    e2.classList.add('marker');
+    e2.style.background = "url('./images/2.png')"
+
+    // 添加图标，并设置图片的偏移位置
+    var marker = new Geoway.Marker(el,{offset:[-59,-300],minLevel:7})//偏移：【左右，上下】，按照上减下加，左减右加，一般设置为负div宽度一半，负div高度。最小显示级别
+        .setLngLat([120.149, 30.267])//图标经纬度坐标
+        .addTo(map);
+
+    var marker = new Geoway.Marker(e2,{offset:[-59,-300],minLevel:7})
+        .setLngLat([120.148, 30.270])
+        .addTo(map);
+
+</script>
+</body>
+</html>
